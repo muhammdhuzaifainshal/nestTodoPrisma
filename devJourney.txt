@@ -1,0 +1,57 @@
+===================
+LIBRARIES INSTALLED
+===================
+npm i -D prisma
+npm i @prisma/client
+npm i class-validator class-transformer
+npm i @nestjs/config
+npm install --save @nestjs/passport passport passport-local
+npm install --save-dev @types/passport-local
+npm install --save @nestjs/jwt passport-jwt
+npm install --save-dev @types/passport-jwt
+npm i argon2
+
+npm install @nestjs/swagger swagger-ui-express
+
+
+=====
+STEPS
+======
+first create module/controller/service for auth, user, task, prisma(no controller for it)
+now init a prisma and create your own models, its fields define relations etc..
+install class-transformer and class-validator
+set prisma module to @Global and add PrismaService in exports
+add JwtModule.register({}) in authModule imports and authStrategy in authModule providers
+extend prismaservice with PrismaClient and inside it write:
+constructor(config : ConfigService){
+        super({
+            datasources:{
+                db:{
+                    url:config.get('DATABASE_URL')
+                }
+            }
+        })
+    }
+
+add in add.module.ts imports:
+ConfigModule.forRoot({isGlobal:true})
+
+add to main.ts:
+app.useGlobalPipes(new ValidationPipe({
+    whitelist:true
+  }));
+
+create 2 DTOs for auth; routes for login and signup
+run:
+npx prisma migrate dev && npx prisma generate
+
+create 2 controllers and 2 + 1 services for auth
+defined authStrategy to handle jwt reqs
+
+Optional-work-but-better-to-do:{
+    create authGuards and also create authDecorators
+}
+
+create DTO, controllers, service for user dont forget to protect the guards for proper jwt authentication
+
+create DTO, controllers, service for taska dont forget to protect the guards for proper jwt authentication and getUser(id) for eeach
